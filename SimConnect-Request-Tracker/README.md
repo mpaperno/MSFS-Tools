@@ -18,12 +18,15 @@ Presumably both requirements would already be satisfied if you're working with S
 
 ### Usage
 This is a header-only "library" with one class. Simply `#include "SimConnectRequestTracker.h"` in your code.
-You probably want to include it _after_ any system includes, especially `Windows.h` (or `Windows_types.h` for WASM)...
+You probably want to include it _after_ any system includes, especially `Windows.h` (or `MSFS_WindowsTypes.h` for WASM)...
 but this is not required.
 
 The public API members are fully commented in the code. Generated reference documentation is available in
-[README.cpp.md](README.cpp.md).
+[README.cpp.md](README.cpp.md). A couple **usage examples** are included there.
 
+Actual working "examples" can be found in my [WASimCommander project](https://github.com/mpaperno/WASimCommander/tree/main/src)
+code, which uses the request tracker both on the WASM module (`WASimModule`) and C++ client (`WASimClient`) sides via functions
+in the shared [`SimConnectHelper`](https://github.com/mpaperno/WASimCommander/blob/main/src/shared/SimConnectHelper.h) namespace.
 
 ### Copyright and Disclaimer
 SimConnect-Request-Tracker<br/>
