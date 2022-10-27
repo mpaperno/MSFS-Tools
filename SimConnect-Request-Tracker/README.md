@@ -28,6 +28,13 @@ Actual working "examples" can be found in my [WASimCommander project](https://gi
 code, which uses the request tracker both on the WASM module (`WASimModule`) and C++ client (`WASimClient`) sides via functions
 in the shared [`SimConnectHelper`](https://github.com/mpaperno/WASimCommander/blob/main/src/shared/SimConnectHelper.h) namespace.
 
+### C# Version
+
+I mean to publish a complete version of the tracker for use with C# as time allows. For now one could look at how I implemented
+the equivalent in my _MSFS Touch Portal Plugin_ project, specifically in the
+[`SimConnectService`](https://github.com/mpaperno/MSFSTouchPortalPlugin/blob/next/MSFSTouchPortalPlugin/Services/SimConnectService.cs)
+class. Look for the _DLL Imports_ and _SimConnect Request Tracking_ `#region` markers.
+
 ### Copyright and Disclaimer
 SimConnect-Request-Tracker<br/>
 Code and documentation: Copyright Maxim Paperno, all rights reserved.
