@@ -130,7 +130,16 @@ Makes a record of a SimConnect request. Needs a handle to SimConnect to get the 
 
 #### `public inline `[`RequestData`](#struct_sim_connect_request_tracker_1_1_request_data)` const & `[`getRequestRecord`](#class_sim_connect_request_tracker_1afc54be1bc74f3736098da3b1b80732d0)`(uint32_t dwSendId, uint32_t ex, uint32_t idx)` <a id="class_sim_connect_request_tracker_1afc54be1bc74f3736098da3b1b80732d0"></a>
 
-Try to find and return a request record for the given dwSendId. If no record is found, returns a reference to a static instance which is empty (no method or argument details) except for the dwSendID and exception/index (if passed in to this method).
+Try to find and return a request record for the given dwSendId. If no record is found or the cache is disabled entirely, then it returns a reference to a static instance (which has no method or argument details) populated with the given `dwSendID`, `ex`, and `idx` parameters.
+
+#### Parameters
+* `dwSendId` The `dwSendId` to look up, typically from the `SIMCONNECT_RECV_EXCEPTION.dwSendId` struct member.
+
+* `ex` SimeConnect exception ID, typically from the `SIMCONNECT_RECV_EXCEPTION.dwException` member. This is stored in the returned RequestRecord, and is resolved to a string name (with [`exceptionName()`](#class_sim_connect_request_tracker_1a24d52985d23977ee470d9f190af39828)) for display with the `RequestData::toString()` or stream operator methods.
+
+* `idx` SimeConnect exception parameter index, typically from the `SIMCONNECT_RECV_EXCEPTION.dwIndex` member. This is stored in the returned RequestRecord and is displayed in the `RequestData::toString()` or stream operator method outputs.
+
+**NOTE:** The returned reference should stay in scope unless the cache is shrunk (and that index gets deleted). However the data could change at any point if the cache storage slot is reused for a new request. Or, in the cases where a reference to a static instance is returned, the next `getRequestRecord()` call will overwrite the static data from the previous call. All this to say: **do not store the reference.**
 
 #### `public template<>`  <br/>`inline static void `[`streamArgs`](#class_sim_connect_request_tracker_1a07d97f8294bdac74bcf1ccf0ff968ad3)`(std::ostream & os, T var1, Args... var2)` <a id="class_sim_connect_request_tracker_1a07d97f8294bdac74bcf1ccf0ff968ad3"></a>
 
