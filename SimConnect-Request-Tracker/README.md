@@ -22,7 +22,8 @@ You probably want to include it _after_ any system includes, especially `Windows
 but this is not required.
 
 The public API members are fully commented in the code. Generated reference documentation is available in
-[README.cpp.md](README.cpp.md). A couple **usage examples** are included there.
+Markdown: [README.cpp.md](README.cpp.md) and in HTML: [doc/index.html](doc/index.html).
+A couple **usage examples** are included there.
 
 Actual working "examples" can be found in my [WASimCommander project](https://github.com/mpaperno/WASimCommander/tree/main/src)
 code, which uses the request tracker both on the WASM module (`WASimModule`) and C++ client (`WASimClient`) sides via functions
