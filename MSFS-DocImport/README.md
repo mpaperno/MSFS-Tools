@@ -24,8 +24,11 @@ in the documentation formatting.
 
 **Please let me know if you find any inconsistencies!**
 
+This utility has prompted the following relevant discussion on MSFS Dev forum:<br/>
+https://devsupport.flightsimulator.com/questions/11870/errata-between-sdk-documentation-event-ids-vs-key.html
+
 ### Requirements
-* Python 3.8+ with extra modules:  `bs4` (Beautiful Soup HTML lexer), `lxml` (for parsing HTML), `requests` (for network downloads)
+* Python 3.8+ with extra modules:  `bs4` (Beautiful Soup HTML lexer), `lxml` (for parsing HTML), `requests` (for network downloads).
   All can be installed at once with the provided requirements.txt file, eg:
 
     pip3 install -r requirements.txt
@@ -69,7 +72,6 @@ Import:
 Export (using these option(s) prevents any default imports from running):
 
   --ev_report           Run a report comparing documented Event IDs vs. KEY_* macros.
-                        (Using this option prevents any default imports from running.)
   --export {events,simvars,units,keyids,meta} [ ...]
                         Exports contents of specified table(s) in tab-delimited text format to stdout
                         (use redirect to capture to file).
@@ -109,7 +111,7 @@ Meta:
 
 | Measure | Name | ShortName | Aliases | Description |
 | :---   | :--- | :---        | :---   | :---        |
-| Area | square meters | m2 | square meter,square meters,sq m,m2, | A square meter is an SI unit of area, equal to the area of a square with sides of one meter. It is equal to 10.7639ftÂ². |
+| Area | square meters | m2 | square meter,square meters,sq m,m2, | A square meter is an SI unit of area, equal to the area of a square with sides of one meter. It is equal to 10.7639ft². |
 | Area | square kilometers | km2 | square kilometer,square kilometers,sq km,km2, | A square kilometer is an SI unit of area, equal to the area of a square with sides of one kilometer. It is equal to 0.386102 mi². |
 | Volume | cubic inches | in3 | cubic inch,cubic inches,cu in,in3, | A cubic inch is an imperial unit of area, equal to the area of a cube with sides of one inch. It is equal to 16.3871cm³. |
 | Volume | cubic feet | ft3 | cubic foot,cubic feet,cu ft,ft3, | A cubic foot is an imperial unit of area, equal to the area of a cube with sides of one foot. It is equal to 28316.917cm³ or 1728.01in³. |
