@@ -32,7 +32,7 @@ GNU General Public License for more details.
 A copy of the GNU General Public License is available at <http://www.gnu.org/licenses/>.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from argparse import ArgumentParser
 from bs4 import BeautifulSoup as soup, Tag as bs4Tag
@@ -156,7 +156,7 @@ def getCleanText(fromElement):
 	# Remove UTF8 NO-BREAK-SPACE which appears in some texts and blank values.
 	if (isinstance(fromElement, bs4Tag)):
 		fromElement = fromElement.get_text()
-	return re.sub(r'\xC2\xA0?', '', fromElement).strip()
+	return re.sub(r'\xC2', '', fromElement).strip()
 
 
 ### Meta Data
@@ -262,7 +262,7 @@ def scrapeEvents(drop = False, flighting = False):
 		print(f"\tWARNING: Could not find 'EVENT IDs' h2 tag.")
 		return 1
 	evSystemsList = evHead.find_next_sibling('ul').select('li a')  # , limit=1
-	print(f"Found {len(evSystemsList)} Systems...")
+	print(f"Found {len(evSystemsList)} Systems...\n")
 	for evA in evSystemsList:
 		evLink = evA.get('href')
 		if (evLink):
@@ -376,7 +376,7 @@ def scrapeSimvars(drop = False, flighting = True):
 		print(f"\tWARNING: Could not find 'SIMULATION VARIABLES' h2 tag.")
 		return 1
 	svSystemsList = svHead.find_next_sibling('ul').select('li a')[1::]  # skip the first link which should be the Units listing
-	print(f"Found {len(svSystemsList)} Systems...")
+	print(f"Found {len(svSystemsList)} Systems...\n")
 	for svA in svSystemsList:
 		svLink = svA.get('href')
 		if (svLink):
@@ -539,7 +539,7 @@ def eventIdReport():
 	"""
 	print("Events which are documented but do not exist in KEY_* macros:\n")
 	for row in g_dbConn.execute(sql):
-		print(f"{row['Name']}\t\t{row['System']} - {row['Category']}\t{('[DEPR]' if row['Deprecated'] else '')}")
+		print(f"{row['Name']:45} {row['System']} - {row['Category']:45}{('[DEPR]' if row['Deprecated'] else '')}")
 	print("------------------\n")
 
 	sql = """
@@ -551,7 +551,7 @@ def eventIdReport():
 	"""
 	print("Event IDs from KEY_* macros which are not documented:\n")
 	for row in g_dbConn.execute(sql):
-		print(f"{row['KeyName']}\t\t{row['KeyID']}")
+		print(f"{row['KeyName']:45} {row['KeyID']}")
 	print("------------------\n")
 
 
