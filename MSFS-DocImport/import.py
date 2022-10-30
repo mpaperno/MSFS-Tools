@@ -317,15 +317,20 @@ def scrapeSystemSimVars(sysUrl):
 		catImportCount = 0
 		# check if whole category is deprecated
 		catDepr = "deprecated" in catName.lower()
+		varDescript = ""
 		rows = cat.find('tbody').find_all('tr')
 		for row in rows:
 			cols = row.find_all('td')
-			if (len(cols) < 4):
+			if (len(cols) < 3):
 				continue  # skip the TH row and some aux tables
-			varDescript = getCleanText(cols[1])
-			varUnit = getCleanText(cols[2])
-			varSettable = 1 if cols[3].find('span', class_='checkmark_circle') != None else 0
-			varMulti = getCleanText(cols[4]) if (len(cols) > 4) else ""  # sometimes the "Multiplayer" column is missing, though mostly for deprecated and struct type vars
+			# In almost all cases there are at least 4 columns with: name | description | units | settable [ | multiplayer ]
+			# but at least in one case (Breakers), the description column has a rowspan and subsequent rows have only 3-4 columns: name | units | settable [ | multiplayer ]
+			colIdxShift = 0 if len(cols) > 3 else -1
+			if (colIdxShift > -1):
+				varDescript = getCleanText(cols[1])
+			varUnit = getCleanText(cols[2 + colIdxShift])
+			varSettable = 1 if cols[3 + colIdxShift].find('span', class_='checkmark_circle') != None else 0
+			varMulti = getCleanText(cols[4 + colIdxShift]) if (len(cols) > 4 + colIdxShift) else ""  # sometimes the "Multiplayer" column is missing, though mostly for deprecated and struct type vars
 			varDepr = catDepr
 			if (not varDepr):
 				# Determine if simvar is deprecated, which is most reliably indicated by a red colored background style.
