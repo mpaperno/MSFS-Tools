@@ -195,33 +195,36 @@ def scrapeSystemEvents(evLink):
 	catIndex = 0  # just for error reporting
 	for cat in cats:
 		catIndex += 1
+		rows = cat.find_all('tr')
+		colsCount = len(rows[0].find_all('th')) if rows else 0
+		# Expected column layout: name | params | descript [ | multiplayer ]
+		if (colsCount < 3):
+			print(f"\tWARNING: Skipping table {catIndex}, not enough columns.")
+			continue
 		catNameHdr = cat.find_previous_sibling(['h3', 'h4'])  # for some reason the heading level isn't always consistent
 		catName = catNameHdr.get_text(strip=True) if catNameHdr else ""
 		if (not catName):
 			print(f"\tWARNING: Table {catIndex} has no apparent category name, using System name instead.")
 			catName = sysName
-		## EXCEPTION:  Skip "Fuel Selector Codes" table on Aircraft Fuel System Events page (need better way to detect)
-		if (catName.endswith("Codes")):
-			print(f"\tWARNING: Skipping table '{catName}'.")
-			continue
 		print(f"Importing '{catName}'...")
 		evParams = ""
 		evCount = 0
 		# check if whole category is deprecated
 		catDepr = "deprecated" in catName.lower()
-		rows = cat.find_all('tr')
-		for row in rows:
+		for row in rows[1::]:
 			cols = row.find_all('td')
-			if (len(cols) < 2):
-				continue # skip the TH row
-			# In almost all cases there are at least 3 columns with name | params | descript [ | multiplayer ]
-			# but at least in one case (Breakers), the first params column has a rowspan and subsequent rows have only 2 columns with name | descript
-			colIdxShift = 0 if len(cols) > 2 else -1
+			rowColsLen = len(cols)
+			if (rowColsLen < 2):
+				continue
+			# In almost all cases there are at least 3 columns, but at least in one case (Breakers),
+			# the first params column has a rowspan and subsequent rows have only 2 columns with name | descript
+			colIdxShift = -1 if rowColsLen < colsCount else 0
+			# if the params column is missing then we reuse the previous params which is scoped outside the loop
 			if (colIdxShift > -1):
 				evParams = getCleanText(cols[1])
 			evDescript = getCleanText(cols[2 + colIdxShift])
 			# sometimes the "Multiplayer" column is missing
-			evMulti = getCleanText(cols[3 + colIdxShift]) if (len(cols) > 3 + colIdxShift) else ""
+			evMulti = getCleanText(cols[3 + colIdxShift]) if (rowColsLen > 3 + colIdxShift) else ""
 			evDepr = catDepr
 			if (not evDepr):
 				# Determine if event is deprecated, which is most reliably indicated by a red colored background style.
@@ -305,6 +308,13 @@ def scrapeSystemSimVars(sysUrl):
 	catIndex = 0  # just for error reporting
 	for cat in cats:
 		catIndex += 1
+		rows = cat.find('tbody').find_all('tr')
+		colsCount = len(rows[0].find_all('th')) if rows else 0
+		# SU10 docs have 4 columns, SU11 docs add Multiplayer column (in most cases, but not all)
+		# name | description | units | settable [ | multiplayer ]
+		if (colsCount < 4):
+			print(f"\tWARNING: Skipping table {catIndex}, not enough columns.")
+			continue
 		catNameHdr = cat.find_previous_sibling(['h3', 'h4'])
 		catName = ""
 		if (catNameHdr):
@@ -318,19 +328,26 @@ def scrapeSystemSimVars(sysUrl):
 		# check if whole category is deprecated
 		catDepr = "deprecated" in catName.lower()
 		varDescript = ""
-		rows = cat.find('tbody').find_all('tr')
-		for row in rows:
+		for row in rows[1::]:
 			cols = row.find_all('td')
-			if (len(cols) < 3):
-				continue  # skip the TH row and some aux tables
-			# In almost all cases there are at least 4 columns with: name | description | units | settable [ | multiplayer ]
-			# but at least in one case (Breakers), the description column has a rowspan and subsequent rows have only 3-4 columns: name | units | settable [ | multiplayer ]
-			colIdxShift = 0 if len(cols) > 3 else -1
+			rowColsLen = len(cols)
+			if (rowColsLen < 3):
+				continue
+			# In almost all cases there are at least 4 columns, but at least in one case (Breakers),
+			# the description column has a rowspan and subsequent rows have only 3-4 columns: name | units | settable [ | multiplayer ]
+			colIdxShift = 0
+			if rowColsLen < colsCount:
+				colIdxShift -= 1
+			# ... oh and in the SU10 docs they cram the Multiplayer info into the description cell on 17 SimVars... though this is fixed in SU11 version.
+			elif rowColsLen > colsCount:
+				colIdxShift += 1
+			# if the description column is missing then we reuse the previous description which is scoped outside the loop
 			if (colIdxShift > -1):
 				varDescript = getCleanText(cols[1])
 			varUnit = getCleanText(cols[2 + colIdxShift])
 			varSettable = 1 if cols[3 + colIdxShift].find('span', class_='checkmark_circle') != None else 0
-			varMulti = getCleanText(cols[4 + colIdxShift]) if (len(cols) > 4 + colIdxShift) else ""  # sometimes the "Multiplayer" column is missing, though mostly for deprecated and struct type vars
+			# sometimes the "Multiplayer" column is missing in SU11 docs also
+			varMulti = getCleanText(cols[4 + colIdxShift]) if (rowColsLen > 4 + colIdxShift) else ""
 			varDepr = catDepr
 			if (not varDepr):
 				# Determine if simvar is deprecated, which is most reliably indicated by a red colored background style.
